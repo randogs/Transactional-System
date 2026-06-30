@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($newPassword !== $confirmPassword) {
 
-        $message = "New passwords do not match.";
+        $message = "New password and Confirm new password should be the same.";
 
     } else {
 
@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if (password_verify($currentPassword, $user["password"])) {
 
-            // Hash the new password
+
             $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
 
             $update = $conn->prepare("UPDATE users SET password = ? WHERE id = ?");

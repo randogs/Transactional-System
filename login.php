@@ -42,15 +42,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if (isset($_POST["remember"])) {
 
-                setcookie(
-                    "username",
-                    $username,
-                    time() + (86400 * 30),
-                    "/"
-                );
+    setcookie(
+        "username",
+        $username,
+        time() + (86400 * 30),
+        "/"
+    );
 
-            }
+    setcookie(
+        "password",
+        $password,
+        time() + (86400 * 30),
+        "/"
+    );
 
+} else {
+
+    setcookie(
+        "username",
+        "",
+        time() - 3600,
+        "/"
+    );
+
+    setcookie(
+        "password",
+        "",
+        time() - 3600,
+        "/"
+    );
+
+}
             $stmt->close();
             $conn->close();
 
@@ -59,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         } else {
 
-            $message = "Incorrect password.";
+            $message = "Current password is not the same with the old password.";
 
         }
 
@@ -166,10 +188,11 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
                     <i class="bi bi-lock-fill"></i>
 
                     <input
-                        type="password"
-                        name="password"
-                        placeholder="Enter Password"
-                        required>
+                       type="password"
+                       name="password"
+                       placeholder="Enter Password"
+                       value="<?= isset($_COOKIE['password']) ? htmlspecialchars($_COOKIE['password']) : '' ?>"
+                       required>
 
                 </div>
 

@@ -114,8 +114,6 @@ $conn->close();
 
 <div class="container">
 
-    <!-- LEFT PANEL -->
-
     <div class="left">
 
         <i class="bi bi-heart-pulse-fill"></i>
