@@ -2,12 +2,27 @@
 
 session_start();
 
+include "config/database.php";
+
 if (!isset($_SESSION["user_id"])) {
 
     header("Location: login.php");
     exit();
 
 }
+
+// Dashboard Statistics
+$patients = $conn->query("SELECT COUNT(*) AS total FROM patients");
+$totalPatients = $patients->fetch_assoc()["total"];
+
+$doctors = $conn->query("SELECT COUNT(*) AS total FROM doctors");
+$totalDoctors = $doctors->fetch_assoc()["total"];
+
+$appointments = $conn->query("SELECT COUNT(*) AS total FROM appointments");
+$totalAppointments = $appointments->fetch_assoc()["total"];
+
+$pending = $conn->query("SELECT COUNT(*) AS total FROM appointments WHERE status='Pending'");
+$totalPending = $pending->fetch_assoc()["total"];
 
 ?>
 
@@ -20,9 +35,9 @@ if (!isset($_SESSION["user_id"])) {
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>CareSync | Home</title>
+<title>CareSync Dashboard</title>
 
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/dashboard.css">
 
 <link rel="stylesheet"
 href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -31,87 +46,124 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
 
 <body>
 
-<div class="container">
+<div class="wrapper">
 
-    <div class="left">
+    <?php include "includes/sidebar.php"; ?>
 
-        <i class="bi bi-heart-pulse-fill"></i>
+    <div class="main">
 
-        <h1>CareSync</h1>
+        <?php
 
-        <h3>Welcome!</h3>
+$pageTitle = "Dashboard";
+include "includes/header.php";
 
-        <p>
-            You are now logged in.
-        </p>
+           ?>
 
-    </div>
+        <!-- Statistics -->
 
-    <div class="right">
+        <div class="cards">
 
-        <h2>
+            <div class="card">
 
-            Welcome,
+                <i class="bi bi-people-fill"></i>
 
-            <?= htmlspecialchars($_SESSION["first_name"]) ?>
+                <h3>Patients</h3>
+
+                <p><?= $totalPatients ?></p>
+
+            </div>
+
+            <div class="card">
+
+                <i class="bi bi-person-badge-fill"></i>
+
+                <h3>Doctors</h3>
+
+                <p><?= $totalDoctors ?></p>
+
+            </div>
+
+            <div class="card">
+
+                <i class="bi bi-calendar-check-fill"></i>
+
+                <h3>Appointments</h3>
+
+                <p><?= $totalAppointments ?></p>
+
+            </div>
+
+            <div class="card">
+
+                <i class="bi bi-hourglass-split"></i>
+
+                <h3>Pending</h3>
+
+                <p><?= $totalPending ?></p>
+
+            </div>
+
+        </div>
+
+        <!-- Quick Actions -->
+
+        <h2 style="margin-bottom:20px; color:#0F766E;">
+
+            Quick Actions
 
         </h2>
 
-        <br>
+        <div class="actions">
 
-        <p>
+            <a
+                href="patients/add_patient.php"
+                class="action">
 
-            <strong>Username:</strong>
+                <i class="bi bi-person-plus-fill"></i>
 
-            <?= htmlspecialchars($_SESSION["username"]) ?>
+                <br><br>
 
-        </p>
+                Add Patient
 
-        <br>
+            </a>
 
-        <p>
+            <a
+                href="patients/view_patients.php"
+                class="action">
 
-            <strong>Email:</strong>
+                <i class="bi bi-people-fill"></i>
 
-            <?= htmlspecialchars($_SESSION["email"]) ?>
+                <br><br>
 
-        </p>
+                Manage Patients
 
-        <br>
+            </a>
 
-        <p>
+            <a
+                href="doctors/view_doctors.php"
+                class="action">
 
-            <strong>Birthday:</strong>
+                <i class="bi bi-person-badge-fill"></i>
 
-            <?= htmlspecialchars($_SESSION["birthday"]) ?>
+                <br><br>
 
-        </p>
+                Manage Doctors
 
-        <br>
+            </a>
 
-        <p>
+            <a
+                href="#"
+                class="action">
 
-            <strong>Contact Number:</strong>
+                <i class="bi bi-calendar-check-fill"></i>
 
-            <?= htmlspecialchars($_SESSION["contact_number"]) ?>
+                <br><br>
 
-        </p>
+                Manage Appointments
 
-        <br><br>
+            </a>
 
-        <a href="reset_password.php">
-
-            Reset Password
-
-        </a>
-
-        |
-
-        <a href="logout.php">
-
-            Logout
-
-        </a>
+        </div>
 
     </div>
 
