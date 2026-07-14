@@ -13,55 +13,37 @@ if (!isset($_SESSION["user_id"])) {
 
 $message = "";
 
-/* Load Patients */
-
-$patients = $conn->query("
-    SELECT
-        patient_id,
-        first_name,
-        middle_name,
-        last_name
-    FROM patients
-    ORDER BY first_name
-");
-
-/* Load Doctors */
-
-$doctors = $conn->query("
-    SELECT
-        doctor_id,
-        doctor_name
-    FROM doctors
-    ORDER BY doctor_name
-");
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $patient_id = $_POST["patient_id"];
-    $doctor_id = $_POST["doctor_id"];
-    $appointment_date = $_POST["appointment_date"];
-    $appointment_time = $_POST["appointment_time"];
-    $reason = trim($_POST["reason"]);
-    $status = $_POST["status"];
+    $first_name = trim($_POST["first_name"]);
+    $middle_name = trim($_POST["middle_name"]);
+    $last_name = trim($_POST["last_name"]);
+    $age = (int)$_POST["age"];
+    $gender = $_POST["gender"];
+    $address = trim($_POST["address"]);
+    $contact_number = trim($_POST["contact_number"]);
+    $email = trim($_POST["email"]);
 
-    /* Check duplicate appointment */
+    /* Duplicate Check */
 
     $check = $conn->prepare("
-        SELECT appointment_id
-        FROM appointments
+        SELECT patient_id
+        FROM patients
         WHERE
-            patient_id = ?
-            AND doctor_id = ?
-            AND appointment_date = ?
-            AND appointment_time = ?
+            first_name = ?
+            AND middle_name = ?
+            AND last_name = ?
+            AND contact_number = ?
+            AND email = ?
     ");
 
     $check->bind_param(
-        "iiss",
-        $patient_id,
-        $doctor_id,
-        $appointment_date,
-        $appointment_time
+        "sssss",
+        $first_name,
+        $middle_name,
+        $last_name,
+        $contact_number,
+        $email
     );
 
     $check->execute();
@@ -69,76 +51,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($check->num_rows > 0) {
 
-        $message = "This appointment already exists.";
+        $message = "Patient already exists.";
 
     } else {
 
-        /* Prevent doctor double booking */
-
-        $doctorCheck = $conn->prepare("
-            SELECT appointment_id
-            FROM appointments
-            WHERE
-                doctor_id = ?
-                AND appointment_date = ?
-                AND appointment_time = ?
+        $stmt = $conn->prepare("
+            INSERT INTO patients
+            (
+                first_name,
+                middle_name,
+                last_name,
+                age,
+                gender,
+                address,
+                contact_number,
+                email
+            )
+            VALUES
+            (?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
-        $doctorCheck->bind_param(
-            "iss",
-            $doctor_id,
-            $appointment_date,
-            $appointment_time
+        $stmt->bind_param(
+            "sssissss",
+            $first_name,
+            $middle_name,
+            $last_name,
+            $age,
+            $gender,
+            $address,
+            $contact_number,
+            $email
         );
 
-        $doctorCheck->execute();
-        $doctorCheck->store_result();
+        if ($stmt->execute()) {
 
-        if ($doctorCheck->num_rows > 0) {
-
-            $message = "This doctor already has an appointment at the selected date and time.";
+            $message = "Patient added successfully.";
 
         } else {
 
-            $stmt = $conn->prepare("
-                INSERT INTO appointments
-                (
-                    patient_id,
-                    doctor_id,
-                    appointment_date,
-                    appointment_time,
-                    reason,
-                    status
-                )
-                VALUES
-                (?, ?, ?, ?, ?, ?)
-            ");
-
-            $stmt->bind_param(
-                "iissss",
-                $patient_id,
-                $doctor_id,
-                $appointment_date,
-                $appointment_time,
-                $reason,
-                $status
-            );
-
-            if ($stmt->execute()) {
-
-                $message = "Appointment added successfully.";
-
-            } else {
-
-                $message = "Failed to add appointment.";
-
-            }
-
-            $stmt->close();
+            $message = "Failed to add patient.";
 
         }
 
-        $doctorCheck->close();
+        $stmt->close();
 
     }
 
@@ -170,20 +125,42 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
 
 <body>
 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>CareSync | Add Patient</title>
+
+<link rel="stylesheet"
+      href="../css/style.css">
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+
+<body>
+
 <div class="container">
 
     <div class="left">
 
-        <i class="bi bi-calendar-check-fill"></i>
+        <i class="bi bi-person-plus-fill"></i>
 
         <h1>CareSync</h1>
 
-        <h3>Schedule Appointment</h3>
+        <h3>Add Patient</h3>
 
         <p>
 
-            Schedule a new appointment
-            in the CareSync system.
+            Register a new patient
+            into the CareSync system.
 
         </p>
 
@@ -191,11 +168,11 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
 
     <div class="right">
 
-        <h2>Add Appointment</h2>
+        <h2>Add Patient</h2>
 
         <p class="subtitle">
 
-            Enter the appointment details.
+            Enter the patient information.
 
         </p>
 
@@ -209,130 +186,174 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
 
         <?php endif; ?>
 
-<form action="" method="POST">
+        <form action="" method="POST">
 
-    <div>
+<div>
 
-        <label>Patient</label>
+    <label>First Name</label>
 
-        <select name="patient_id" required>
+    <div class="input-box">
 
-            <option value="">Select Patient</option>
+        <i class="bi bi-person-fill"></i>
 
-            <?php while($patient = $patients->fetch_assoc()): ?>
+        <input
+            type="text"
+            name="first_name"
+            placeholder="Enter First Name"
+            required>
 
-                <option value="<?= $patient["patient_id"] ?>">
+    </div>
 
-                    <?= htmlspecialchars(
-                        $patient["first_name"] . " " .
-                        $patient["middle_name"] . " " .
-                        $patient["last_name"]
-                    ) ?>
+</div>
 
-                </option>
+<!-- Middle Name -->
 
-            <?php endwhile; ?>
+<div>
+
+    <label>Middle Name</label>
+
+    <div class="input-box">
+
+        <i class="bi bi-person-fill"></i>
+
+        <input
+            type="text"
+            name="middle_name"
+            placeholder="Enter Middle Name">
+
+    </div>
+
+</div>
+
+<!-- Last Name -->
+
+<div>
+
+    <label>Last Name</label>
+
+    <div class="input-box">
+
+        <i class="bi bi-person-fill"></i>
+
+        <input
+            type="text"
+            name="last_name"
+            placeholder="Enter Last Name"
+            required>
+
+    </div>
+
+</div>
+
+<!-- Age -->
+
+<div>
+
+    <label>Age</label>
+
+    <div class="input-box">
+
+        <i class="bi bi-calendar"></i>
+
+        <input
+            type="number"
+            name="age"
+            min="1"
+            max="120"
+            placeholder="Age"
+            required>
+
+    </div>
+
+</div>
+
+<!-- Gender -->
+
+<div>
+
+    <label>Gender</label>
+
+    <div class="input-box">
+
+        <select name="gender" required>
+
+            <option value="">Select Gender</option>
+
+            <option value="Male">Male</option>
+
+            <option value="Female">Female</option>
 
         </select>
 
     </div>
 
-    <div>
+</div>
 
-        <label>Doctor</label>
+<!-- Contact Number -->
 
-        <select name="doctor_id" required>
+<div>
 
-            <option value="">Select Doctor</option>
+    <label>Contact Number</label>
 
-            <?php while($doctor = $doctors->fetch_assoc()): ?>
+    <div class="input-box">
 
-                <option value="<?= $doctor["doctor_id"] ?>">
+        <i class="bi bi-telephone-fill"></i>
 
-                    <?= htmlspecialchars($doctor["doctor_name"]) ?>
-
-                </option>
-
-            <?php endwhile; ?>
-
-        </select>
+        <input
+            type="text"
+            name="contact_number"
+            placeholder="09XXXXXXXXX"
+            required>
 
     </div>
 
-    <div>
+</div>
 
-        <label>Appointment Date</label>
+<!-- Email -->
 
-        <div class="input-box">
+<div>
 
-            <i class="bi bi-calendar-date"></i>
+    <label>Email Address</label>
 
-            <input
-                type="date"
-                name="appointment_date"
-                required>
+    <div class="input-box">
 
-        </div>
+        <i class="bi bi-envelope-fill"></i>
 
-    </div>
-
-    <div>
-
-        <label>Appointment Time</label>
-
-        <div class="input-box">
-
-            <i class="bi bi-clock"></i>
-
-            <input
-                type="time"
-                name="appointment_time"
-                required>
-
-        </div>
+        <input
+            type="email"
+            name="email"
+            placeholder="example@email.com"
+            required>
 
     </div>
 
-    <div class="full">
+</div>
 
-        <label>Reason</label>
+<!-- Address -->
 
-        <div class="input-box">
+<div class="full">
 
-            <textarea
-                name="reason"
-                rows="4"
-                placeholder="Reason for appointment"></textarea>
+    <label>Address</label>
 
-        </div>
+    <div class="input-box">
 
-    </div>
-
-    <div class="full">
-
-        <label>Status</label>
-
-        <select name="status">
-
-            <option value="Pending">Pending</option>
-
-            <option value="Approved">Approved</option>
-
-            <option value="Completed">Completed</option>
-
-            <option value="Cancelled">Cancelled</option>
-
-        </select>
+        <textarea
+            name="address"
+            rows="4"
+            placeholder="Enter Address"
+            required></textarea>
 
     </div>
 
-    <button type="submit">
+</div>
 
-        <i class="bi bi-save"></i>
+<button type="submit">
 
-        Save Appointment
+    <i class="bi bi-save"></i>
 
-    </button>
+    Save Patient
+
+</button>
 
 </form>
 
@@ -345,9 +366,6 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
     </a>
 
 </div>
-
-
-        </div>
 
     </div>
 

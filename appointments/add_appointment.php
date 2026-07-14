@@ -13,7 +13,6 @@ if (!isset($_SESSION["user_id"])) {
 
 $message = "";
 
-/* Load Patients */
 
 $patients = $conn->query("
     SELECT patient_id,
@@ -24,7 +23,6 @@ $patients = $conn->query("
     ORDER BY first_name
 ");
 
-/* Load Doctors */
 
 $doctors = $conn->query("
     SELECT doctor_id,
@@ -42,7 +40,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $reason = trim($_POST["reason"]);
     $status = $_POST["status"];
 
-    /* Prevent duplicate appointments */
 
     $check = $conn->prepare("
         SELECT appointment_id

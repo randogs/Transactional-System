@@ -309,7 +309,7 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
 <div class="full">
 
     <button type="submit">
-            
+
         <i class="bi bi-save"></i>
          Update Patient
 

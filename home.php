@@ -11,7 +11,6 @@ if (!isset($_SESSION["user_id"])) {
 
 }
 
-// Dashboard Statistics
 $patients = $conn->query("SELECT COUNT(*) AS total FROM patients");
 $totalPatients = $patients->fetch_assoc()["total"];
 
