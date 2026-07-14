@@ -795,5 +795,10 @@ table{
     margin-top:15px;
 
 }
+.input-box select{
+
+    padding-left:45px;
+
+}
 
 }

@@ -1,13 +1,9 @@
 <div class="sidebar">
 
-    <h2>
-
-        ❤️ CareSync
-
-    </h2>
+    <h2>CareSync</h2>
 
     <a href="/Transactional-System/home.php"
-    class="<?= ($pageTitle ?? '') === 'Dashboard' ? 'active' : '' ?>">
+       class="<?= ($pageTitle ?? '') === 'Dashboard' ? 'active' : '' ?>">
 
         <i class="bi bi-house-door-fill"></i>
 
@@ -16,7 +12,7 @@
     </a>
 
     <a href="/Transactional-System/patients/view_patients.php"
-          class="<?= ($pageTitle ?? '') === 'Patient Management' ? 'active' : '' ?>">
+       class="<?= ($pageTitle ?? '') === 'Patient Management' ? 'active' : '' ?>">
 
         <i class="bi bi-people-fill"></i>
 
@@ -25,7 +21,7 @@
     </a>
 
     <a href="/Transactional-System/doctors/view_doctors.php"
-           class="<?= ($pageTitle ?? '') === 'Doctor Management' ? 'active' : '' ?>">
+       class="<?= ($pageTitle ?? '') === 'Doctor Management' ? 'active' : '' ?>">
 
         <i class="bi bi-person-badge-fill"></i>
 
@@ -33,7 +29,8 @@
 
     </a>
 
-    <a href="#">
+    <a href="/Transactional-System/appointments/view_appointments.php"
+       class="<?= ($pageTitle ?? '') === 'Appointment Management' ? 'active' : '' ?>">
 
         <i class="bi bi-calendar-check-fill"></i>
 

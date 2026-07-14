@@ -43,9 +43,11 @@ body{
 
 .sidebar h2{
 
-    text-align:center;
+    text-align:left;
 
     margin-bottom:40px;
+
+    padding-left:15px;
 
 }
 
@@ -435,7 +437,3 @@ table td:last-child{
     text-align:center;
 
 }
-
-
-
-

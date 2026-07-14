@@ -152,7 +152,7 @@ include "includes/header.php";
             </a>
 
             <a
-                href="#"
+                href="appointments/view_appointments.php"
                 class="action">
 
                 <i class="bi bi-calendar-check-fill"></i>
